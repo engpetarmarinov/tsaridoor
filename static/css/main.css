@@ -1,0 +1,45 @@
+body {
+    background-color: #f2c40f;
+    color: #ba3d31;
+}
+
+h1 {
+    width: 100%;
+    text-align: center;
+    text-shadow: 1px 1px 1px #ba3d31;
+    font-family: Helvetica Neue,Verdana,Helvetica,Arial,Utkal,sans-serif;
+}
+
+.btnContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+    width: 100%;
+}
+
+#unlockBtn {
+    background-image: url("/static/images/lock-icon.png");
+    cursor: pointer;
+    width: 256px;
+    height: 256px;
+    border: none;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#unlockBtn.unlocking {
+    background-image: url("/static/images/unlock-icon.png");
+}
+
+#unlockBtn:hover{
+    cursor: pointer;
+    user-select: none;
+}
+#unlockBtn:active{
+    user-select: none;
+}
+

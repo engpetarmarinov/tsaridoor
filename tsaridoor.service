@@ -1,0 +1,9 @@
+[Unit]
+Description=tsaridoor
+
+[Service]
+WorkingDirectory=/home/username/tsaridoor/
+ExecStart=/home/username/tsaridoor/tsaridoor
+
+[Install]
+WantedBy=multi-user.target
