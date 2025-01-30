@@ -22,8 +22,8 @@ func main() {
 	}()
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	http.Handle("/unlock", middleware.LogRequestWrapper(middleware.BasicAuth(unlockHandler)))
-	http.Handle("/", middleware.LogRequestWrapper(middleware.BasicAuth(homeHandler)))
+	http.Handle("/unlock", middleware.BasicAuth(middleware.LogRequestWrapper(unlockHandler)))
+	http.Handle("/", middleware.BasicAuth(middleware.LogRequestWrapper(homeHandler)))
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
 

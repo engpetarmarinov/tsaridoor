@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"context"
+	"crypto/sha256"
 	"encoding/csv"
 	"errors"
 	"fmt"
@@ -10,10 +12,7 @@ import (
 	"strings"
 )
 
-type usernameType string
-type passwordType string
-
-var basicAuthUsers = map[usernameType]passwordType{}
+var basicAuthUsers = map[string]string{}
 
 const csvUsers = "users.csv"
 
@@ -28,7 +27,10 @@ func BasicAuth(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if username, password, ok := r.BasicAuth(); ok {
-			if expectedPass, ok := basicAuthUsers[usernameType(username)]; ok && expectedPass == passwordType(password) {
+			passwordHash := fmt.Sprintf("%x", sha256.Sum256([]byte(password)))
+			if expectedPass, ok := basicAuthUsers[username]; ok && expectedPass == passwordHash {
+				ctx := context.WithValue(r.Context(), ctxKeyUsername, username)
+				r := r.WithContext(ctx)
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -43,8 +45,8 @@ func BasicAuth(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func readUsersFromCSV(csvFilePath string) (map[usernameType]passwordType, error) {
-	users := map[usernameType]passwordType{}
+func readUsersFromCSV(csvFilePath string) (map[string]string, error) {
+	users := map[string]string{}
 	csvFile, err := os.Open(csvFilePath)
 	if err != nil {
 		return users, err
@@ -70,7 +72,7 @@ func readUsersFromCSV(csvFilePath string) (map[usernameType]passwordType, error)
 				return users, errors.New(fmt.Sprintf("%s must start with headers: username,password", csvUsers))
 			}
 		} else {
-			users[usernameType(record[0])] = passwordType(record[1])
+			users[record[0]] = record[1]
 		}
 	}
 
