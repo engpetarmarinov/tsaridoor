@@ -2,8 +2,8 @@
 Description=tsaridoor
 
 [Service]
-WorkingDirectory=/home/username/tsaridoor/
-ExecStart=/home/username/tsaridoor/tsaridoor
+WorkingDirectory=/home/wildalmighty/tsaridoor/
+ExecStart=/home/wildalmighty/tsaridoor/tsaridoor
 
 [Install]
 WantedBy=multi-user.target

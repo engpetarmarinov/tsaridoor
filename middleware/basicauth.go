@@ -1,26 +1,28 @@
 package middleware
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
+	"embed"
 	"encoding/csv"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 )
 
 var basicAuthUsers = map[string]string{}
 
-const csvUsers = "users.csv"
+//go:embed users.csv
+var csvUsers embed.FS
 
 func BasicAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if len(basicAuthUsers) == 0 {
 			var err error
-			basicAuthUsers, err = readUsersFromCSV(csvUsers)
+			basicAuthUsers, err = readUsersFromCSV()
 			if err != nil {
 				log.Fatalln(fmt.Sprintf("BasicAuth.readUsersFromCSV returned error: %s", err))
 			}
@@ -45,17 +47,14 @@ func BasicAuth(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func readUsersFromCSV(csvFilePath string) (map[string]string, error) {
+func readUsersFromCSV() (map[string]string, error) {
 	users := map[string]string{}
-	csvFile, err := os.Open(csvFilePath)
+	csvFile, err := csvUsers.ReadFile("users.csv")
 	if err != nil {
 		return users, err
 	}
 
-	defer csvFile.Close()
-
-	reader := csv.NewReader(csvFile)
-
+	reader := csv.NewReader(bytes.NewReader(csvFile))
 	rawCSVData, err := reader.ReadAll()
 	if err != nil {
 		return users, err
@@ -69,7 +68,7 @@ func readUsersFromCSV(csvFilePath string) (map[string]string, error) {
 				header = append(header, strings.TrimSpace(record[i]))
 			}
 			if len(header) != 2 || header[0] != "username" || header[1] != "password" {
-				return users, errors.New(fmt.Sprintf("%s must start with headers: username,password", csvUsers))
+				return users, errors.New("csv must start with headers: username,password")
 			}
 		} else {
 			users[record[0]] = record[1]

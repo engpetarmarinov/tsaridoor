@@ -2,7 +2,7 @@
 set -e
 SERVICE_NAME="tsaridoor.service"
 echo "Copying files..."
-scp -r users.csv ./tsaridoor-hotrelease ./home.html ./static  "${TSARIDOOR_USERNAME}"@"${TSARIDOOR_IP}":/home/"${TSARIDOOR_USERNAME}"/tsaridoor
+scp -r ./tsaridoor-hotrelease ./home.html ./static  "${TSARIDOOR_USERNAME}"@"${TSARIDOOR_IP}":/home/"${TSARIDOOR_USERNAME}"/tsaridoor
 
 echo "Hotreleasing: Copy the new version and restart ${SERVICE_NAME}..."
 ssh "${TSARIDOOR_USERNAME}"@"${TSARIDOOR_IP}"  <<EOF
